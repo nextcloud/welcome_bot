@@ -1,0 +1,3 @@
+bot:
+  port: 8088 # Port the Go Server should be listening to
+  secret: "0123456789012345678901234567890123456789012345678901234567890123" # Secret (64+ chars recommended)
