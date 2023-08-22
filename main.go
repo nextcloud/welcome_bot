@@ -95,8 +95,12 @@ type RichObjectParameter struct {
 }
 
 type RichObjectMessage struct {
-	Message    string                         `json:"message"`
-	Parameters map[string]RichObjectParameter `yaml:"parameters"`
+	Message string `json:"message"`
+}
+
+type RichObjectMessageWithParameters struct {
+	RichObjectMessage
+	Parameters map[string]RichObjectParameter `json:"parameters,omitempty"`
 }
 
 func createMessage(input string) (Message, error) {
@@ -111,7 +115,19 @@ func createMessage(input string) (Message, error) {
 	return message, nil
 }
 
-func createRichMessage(input string) (RichObjectMessage, error) {
+func createRichMessage(input string) (RichObjectMessageWithParameters, error) {
+	var message RichObjectMessageWithParameters
+	reader := strings.NewReader(input)
+	decoder := json.NewDecoder(reader)
+	err := decoder.Decode(&message)
+	if err != nil {
+		return message, errInvalidBody
+	}
+
+	return message, nil
+}
+
+func createRichMessageWithoutParameters(input string) (RichObjectMessage, error) {
 	var message RichObjectMessage
 	reader := strings.NewReader(input)
 	decoder := json.NewDecoder(reader)
@@ -214,7 +230,7 @@ func welcomeHandling(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if message.Object.Name == "message" {
-		richMessage, err := createRichMessage(message.Object.Content)
+		richMessage, err := createRichMessageWithoutParameters(message.Object.Content)
 		if err == nil {
 			if triggerMessageRegex.Match([]byte(richMessage.Message)) {
 				log.Printf("Message matched: %s", richMessage.Message)
