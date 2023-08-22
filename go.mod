@@ -1,4 +1,4 @@
-module github.com/nextcloud/goodmorning
+module github.com/nextcloud/welcome_bot
 
 go 1.20
 
