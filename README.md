@@ -1,5 +1,8 @@
 # Welcome bot 👋
-A Golang sample bot that responds to morning phrases
+A Golang sample bot that responds to "Good morning" and "Hello" and welcomes new attendees in the room
+
+![Demo screenshot of some sample bot replies](docs/screenshot.png)
+
 
 ## Installation
 
