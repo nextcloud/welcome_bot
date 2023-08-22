@@ -88,8 +88,15 @@ type Response struct {
 	ReplyTo string `json:"replyTo"`
 }
 
+type RichObjectParameter struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
 type RichObjectMessage struct {
-	Message string `json:"message"`
+	Message    string                         `json:"message"`
+	Parameters map[string]RichObjectParameter `yaml:"parameters"`
 }
 
 func createMessage(input string) (Message, error) {
@@ -217,8 +224,13 @@ func welcomeHandling(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	} else if message.Object.Name == "user_added" {
-		responseText := fmt.Sprintf("Welcome, %s!", "user") // FIXME get username
-		sendReply(server, message, responseText)
+		richMessage, err := createRichMessage(message.Object.Content)
+		if err == nil {
+			if val, ok := richMessage.Parameters["user"]; ok {
+				responseText := fmt.Sprintf("Welcome, %s!", val.Name)
+				sendReply(server, message, responseText)
+			}
+		}
 	}
 
 	http.Error(w, "Received", http.StatusOK)
